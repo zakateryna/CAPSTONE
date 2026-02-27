@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { PaymentElement, useElements, useStripe } from "@stripe/react-stripe-js";
 
-export default function CheckoutForm() {
+export default function CheckoutForm({ orderId }) {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -15,10 +15,14 @@ export default function CheckoutForm() {
     setLoading(true);
     setMsg("");
 
+    const returnUrl = new URL(window.location.origin + "/cart");
+    returnUrl.searchParams.set("paid", "1");
+    if (orderId) returnUrl.searchParams.set("order", orderId);
+
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: window.location.origin + "/cart?paid=1",
+        return_url: returnUrl.toString(),
       },
     });
 

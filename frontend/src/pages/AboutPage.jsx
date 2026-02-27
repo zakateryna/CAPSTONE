@@ -2,9 +2,17 @@ import InfoGridTop from "../components/InfoGridTop";
 import InfoGridBottom from "../components/InfoGridBottom";
 import ArchiveIntro from "../components/ArchiveIntro";
 
-export default function AboutPage({ photos }) {
-  const palermo = photos.find((p) => p.title === "palermo.png");
-  const golden = photos.find((p) => p.title === "goldenticket.png");
+export default function AboutPage({ photos = [] }) {
+  const palermo = photos.find(
+    (p) => p.file === "palermo.png" || p.title === "palermo.png" || p.title === "palermo"
+  );
+
+  const golden = photos.find(
+    (p) =>
+      p.file === "goldenticket.png" ||
+      p.title === "goldenticket.png" ||
+      p.title === "goldenticket"
+  );
 
   return (
     <main className="p-4 max-w-5xl mx-auto">
@@ -31,7 +39,7 @@ export default function AboutPage({ photos }) {
             <img
               src={palermo.src}
               alt={palermo.title}
-              className="w-full h-64 object-cover"
+              className="block w-full h-64 object-cover"
             />
 
             <div className="p-4 text-xs space-y-1">
@@ -58,7 +66,7 @@ export default function AboutPage({ photos }) {
             <img
               src={golden.src}
               alt={golden.title}
-              className="w-full h-64 object-cover"
+              className="block w-full h-64 object-cover"
             />
 
             <div className="p-4 text-xs space-y-2">
@@ -67,14 +75,16 @@ export default function AboutPage({ photos }) {
                 Opens a destination outside the archive environment.
               </p>
 
-              <a
-                href={golden.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block mt-1 border-4 border-[#5D172E] bg-white px-3 py-2 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#5D172E] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#5D172E]"
-              >
-                Open_Link →
-              </a>
+              {golden.href && (
+                <a
+                  href={golden.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-1 border-4 border-[#5D172E] bg-white px-3 py-2 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#5D172E] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#5D172E]"
+                >
+                  Open_Link →
+                </a>
+              )}
             </div>
           </div>
         )}

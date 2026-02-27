@@ -48,7 +48,7 @@ and future tokenized forms (a real project in progress).`}
           Click to see
         </a>
 
-      
+
       </div>
     </div>
   );

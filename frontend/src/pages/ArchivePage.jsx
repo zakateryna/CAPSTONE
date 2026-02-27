@@ -7,15 +7,15 @@ import Gallery from "../components/Gallery";
 import ProductModal from "../components/ProductModal";
 import ArtworkModal from "../components/ArtworkModal";
 
-import { PRODUCT_TYPES } from "../data/productTypes";
+export default function ArchivePage({ photos, productTypes }) {
+  const [selectedPhoto, setSelectedPhoto] = useState(null); 
+  const [projectPhoto, setProjectPhoto] = useState(null);  
 
+  const productList = productTypes || {};
 
-
-export default function ArchivePage({ photos }) {
-  const [selectedPhoto, setSelectedPhoto] = useState(null); // SHOP / FEATURE
-  const [projectPhoto, setProjectPhoto] = useState(null);   // LINK
-
-const productList = PRODUCT_TYPES;
+  const orderedPhotos = useMemo(() => {
+    return [...(photos || [])].sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+  }, [photos]);
 
   const handleCellClick = (photo) => {
     if (!photo) return;
@@ -60,13 +60,13 @@ const productList = PRODUCT_TYPES;
       <MarqueeBar text="Transmission_Active ✦ Some_travels_become_collectible_fragments ✦ Click_and_explore" />
 
       <Gallery
-        photos={photos}
+        photos={orderedPhotos}
         onSelectPhoto={handleCellClick}
         projectPhoto={projectPhoto}
         onCloseProject={closeProject}
       />
 
-      {selectedPhoto?.mode === "SHOP" && (
+      {selectedPhoto?.mode === "SHOP" && productTypes && (
         <ProductModal
           photo={selectedPhoto}
           products={productList}

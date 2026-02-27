@@ -1,53 +1,133 @@
-// src/pages/CartPage.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useCart } from "../context/cartContext";
 import CheckoutPanel from "../components/CheckoutPanel";
 import { useSearchParams, Link } from "react-router-dom";
 
 export default function CartPage() {
   const { items, subtotal, removeItem, setQty, clear } = useCart();
-
   const [searchParams, setSearchParams] = useSearchParams();
   const isPaid = searchParams.get("paid") === "1";
-
+  const orderId = searchParams.get("order");
   const [showCheckout, setShowCheckout] = useState(false);
-
+  const [orderStatus, setOrderStatus] = useState(null); 
+  const [orderMsg, setOrderMsg] = useState("");
   const subtotalCents = Math.round(subtotal * 100);
+  const cleanupTimerRef = useRef(null);
 
-  // ✅ se arrivi da Stripe con ?paid=1: mostri banner + svuoti carrello + pulisci query
+  const banner = useMemo(() => {
+    if (!isPaid) return null;
+
+    if (!orderId) {
+      return {
+        kind: "warn",
+        title: "Payment_Return",
+        text: "Redirect received, but no order reference found. (Check return_url params.)",
+      };
+    }
+
+    if (!orderStatus) {
+      return {
+        kind: "info",
+        title: "Verifying_Order",
+        text: "Checking order status…",
+      };
+    }
+
+    if (orderStatus === "PAID") {
+      return {
+        kind: "ok",
+        title: "Payment_Confirmed",
+        text: "Transaction complete. Your order is registered in the system.",
+      };
+    }
+
+    if (orderStatus === "PENDING") {
+      return {
+        kind: "warn",
+        title: "Payment_Pending",
+        text: "Payment not confirmed yet. If you completed 3DS/auth, refresh in a moment.",
+      };
+    }
+
+    return {
+      kind: "warn",
+      title: `Payment_${orderStatus}`,
+      text: orderMsg || "Payment not confirmed.",
+    };
+  }, [isPaid, orderId, orderStatus, orderMsg]);
+
   useEffect(() => {
-    if (!isPaid) return;
+    const controller = new AbortController();
 
-    // 🔥 svuota carrello dopo pagamento confermato
-    clear();
-    // opzionale: richiudi il checkout panel
-    setShowCheckout(false);
+    if (cleanupTimerRef.current) {
+      window.clearTimeout(cleanupTimerRef.current);
+      cleanupTimerRef.current = null;
+    }
 
-    // rimuove paid=1 dalla URL dopo un attimo, così non resta “incollato”
-    const t = window.setTimeout(() => {
-      const next = new URLSearchParams(searchParams);
-      next.delete("paid");
-      setSearchParams(next, { replace: true });
-    }, 2500);
+    async function verify() {
+      if (!isPaid || !orderId) return;
 
-    return () => window.clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPaid]);
+      setOrderMsg("");
+      setOrderStatus(null); 
+
+      try {
+        const res = await fetch(`/api/orders/${orderId}`, { signal: controller.signal });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok || !data?.ok || !data?.order) {
+          throw new Error(data?.message || "ORDER_FETCH_FAILED");
+        }
+
+        const status = data.order.status;
+        setOrderStatus(status);
+
+        if (status === "PAID") {
+          clear();
+          setShowCheckout(false);
+
+          cleanupTimerRef.current = window.setTimeout(() => {
+            const next = new URLSearchParams(searchParams);
+            next.delete("paid");
+            next.delete("order");
+            setSearchParams(next, { replace: true });
+            cleanupTimerRef.current = null;
+          }, 2500);
+        }
+      } catch (e) {
+        if (e?.name === "AbortError") return;
+
+        setOrderStatus("PENDING");
+        setOrderMsg(e?.message || "Unable to verify order. Try refresh.");
+      }
+    }
+
+    verify();
+
+    return () => {
+      controller.abort();
+      if (cleanupTimerRef.current) {
+        window.clearTimeout(cleanupTimerRef.current);
+        cleanupTimerRef.current = null;
+      }
+    };
+  }, [isPaid, orderId, clear, setSearchParams, searchParams]);
 
   return (
     <div className="p-4 max-w-5xl mx-auto">
-      {/* ✅ PAYMENT CONFIRM BANNER */}
-      {isPaid && (
-        <div className="mb-4 border-4 border-[#5D172E] bg-[#93D5B3] text-[#5D172E] shadow-[6px_6px_0px_0px_#5D172E] p-4">
+      {banner && (
+        <div
+          className={[
+            "mb-4 border-4 border-[#5D172E] text-[#5D172E] shadow-[6px_6px_0px_0px_#5D172E] p-4",
+            banner.kind === "ok" ? "bg-[#93D5B3]" : "bg-[#FFD166]",
+          ].join(" ")}
+        >
           <div className="flex items-start gap-2">
-            <span className="material-symbols-outlined text-sm">verified</span>
+            <span className="material-symbols-outlined text-sm">
+              {banner.kind === "ok" ? "verified" : "info"}
+            </span>
             <div>
-              <p className="text-[10px] font-bold uppercase">
-                Payment_Confirmed
-              </p>
-              <p className="text-[11px] opacity-80 mt-1">
-                Transaction complete. Your order is now registered in the system.
-              </p>
+              <p className="text-[10px] font-bold uppercase">{banner.title}</p>
+              <p className="text-[11px] opacity-80 mt-1">{banner.text}</p>
             </div>
           </div>
         </div>
@@ -71,9 +151,7 @@ export default function CartPage() {
       {items.length === 0 ? (
         <div className="border-4 border-[#5D172E] bg-white shadow-[6px_6px_0px_0px_#5D172E] p-6 text-center">
           <p className="text-xs font-bold uppercase opacity-70">Cart_Empty</p>
-          <p className="text-[10px] opacity-70 mt-2">
-            Add something from the gallery.
-          </p>
+          <p className="text-[10px] opacity-70 mt-2">Add something from the gallery.</p>
 
           <Link
             to="/"
@@ -91,8 +169,7 @@ export default function CartPage() {
             >
               <div className="border-b-4 border-[#5D172E] p-3 bg-[#FFD166] flex items-center justify-between">
                 <div className="text-[10px] font-bold uppercase">
-                  {item.productLabel} <span className="opacity-60">/</span>{" "}
-                  {item.title}
+                  {item.productLabel} <span className="opacity-60">/</span> {item.title}
                 </div>
 
                 <button
@@ -155,13 +232,11 @@ export default function CartPage() {
             </div>
           ))}
 
-          {/* SUBTOTAL */}
           <div className="border-4 border-[#5D172E] bg-white shadow-[6px_6px_0px_0px_#5D172E] p-4 flex justify-between items-center">
             <span className="text-xs font-bold uppercase">Subtotal</span>
             <span className="text-sm font-bold">€{subtotal.toFixed(2)}</span>
           </div>
 
-          {/* CHECKOUT BUTTON */}
           {!showCheckout && (
             <button
               type="button"
@@ -172,18 +247,15 @@ export default function CartPage() {
             </button>
           )}
 
-          {/* MINIMUM AMOUNT (rassicurante) */}
           {showCheckout && subtotalCents < 50 && (
             <div className="border-4 border-[#5D172E] bg-white shadow-[6px_6px_0px_0px_#5D172E] p-4 text-[10px] font-bold uppercase">
               PAYMENT_GATE — Minimum not reached
               <div className="mt-2 text-[11px] opacity-80 normal-case font-normal">
-                Add a small item to continue. No charges will happen until you
-                confirm.
+                Add a small item to continue. No charges will happen until you confirm.
               </div>
             </div>
           )}
 
-          {/* STRIPE CHECKOUT PANEL */}
           {showCheckout && subtotalCents >= 50 && (
             <CheckoutPanel amountCents={subtotalCents} items={items} />
           )}

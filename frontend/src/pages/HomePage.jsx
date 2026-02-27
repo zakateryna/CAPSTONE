@@ -4,13 +4,11 @@ import ArchiveIntro from "../components/ArchiveIntro";
 
 export default function HomePage({ photos }) {
 
-  // prendiamo solo immagini non coming soon
   const availablePhotos = useMemo(
     () => photos.filter(p => p.mode !== "COMING_SOON"),
     [photos]
   );
 
-  // scegliamo 3 random
   const previewPhotos = useMemo(() => {
     const shuffled = [...availablePhotos].sort(() => 0.5 - Math.random());
     return shuffled.slice(0, 3);

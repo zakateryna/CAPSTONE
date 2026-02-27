@@ -1,0 +1,16 @@
+{
+  "tramonto.png": { "id": 1, "mode": "SHOP", "color": "bg-[#93D5B3]" },
+  "finestra.png": { "id": 2, "mode": "SHOP", "color": "bg-[#FF8E72]" },
+  "louvre.png": { "id": 3, "mode": "SHOP", "color": "bg-[#93D5B3]" },
+  "milano.png": { "id": 4, "mode": "SHOP", "color": "bg-[#7EB3D1]" },
+
+  "como.png": { "id": 5, "mode": "COMING_SOON", "color": "bg-[#FFD166]" },
+  "bologna.png": { "id": 6, "mode": "COMING_SOON", "color": "bg-[#7EB3D1]" },
+  "parma.png": { "id": 7, "mode": "COMING_SOON", "color": "bg-[#FFD166]" },
+  "siena.png": { "id": 8, "mode": "COMING_SOON", "color": "bg-[#7EB3D1]" },
+  "dubai.png": { "id": 9, "mode": "COMING_SOON", "color": "bg-[#93D5B3]" },
+  "eifel.png": { "id": 10, "mode": "COMING_SOON", "color": "bg-[#FF8E72]" },
+
+  "palermo.png": { "id": 11, "mode": "FEATURE", "color": "bg-[#FFD166]", "note": "Monthly_Dedication" },
+  "goldenticket.png": { "id": 12, "mode": "LINK", "color": "bg-[#FF8E72]", "href": "https://example.com" }
+}

@@ -2,9 +2,7 @@ export default function ProductPicker({
   products,
   activeKey,
   onPick,
-  baseName, // (non usato per ora, ok)
-
-  // props lasciate per compatibilità
+  baseName,
   onSelectSize,
   onSelectVariant,
 }) {
@@ -34,7 +32,6 @@ export default function ProductPicker({
                 isActive
                   ? `${value.color} shadow-[0px_0px_0px_0px_#5D172E] translate-y-[1px]`
                   : "bg-white shadow-[3px_3px_0px_0px_#5D172E]",
-                // hover/press (solo se non attivo)
                 !isActive ? "hover:-translate-y-[1px] hover:shadow-[4px_4px_0px_0px_#5D172E]" : "",
                 "active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#5D172E]",
               ].join(" ")}

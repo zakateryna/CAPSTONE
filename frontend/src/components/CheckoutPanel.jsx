@@ -1,71 +1,124 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 import CheckoutForm from "./CheckoutForm";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
-function makeIdempotencyKey(amountCents, items) {
-  const base = JSON.stringify({ amountCents, items: items?.map(i => i.id) || [] });
+function makeIdempotencyKey(items) {
+  const base = JSON.stringify({
+    items: (items || []).map((i) => ({
+      baseName: i?.baseName ?? null,
+      productKey: i?.productKey ?? null,
+      qty: i?.quantity ?? 1,
+    })),
+  });
+
   let hash = 0;
   for (let i = 0; i < base.length; i++) hash = (hash * 31 + base.charCodeAt(i)) >>> 0;
-  return `zaka_${hash}`;
+  return `zaka_order_${hash}`;
+}
+
+function getBaseNameFromSrc(srcOrPath) {
+  if (!srcOrPath || typeof srcOrPath !== "string") return "";
+  const file = srcOrPath.split("/").pop() || "";
+  return (file.split(".")[0] || "").trim();
 }
 
 export default function CheckoutPanel({ amountCents, items }) {
-  const apiUrl = import.meta.env.VITE_API_URL;
+  const baseApi = (import.meta.env.VITE_API_URL || "").replace(/\/+$/, "");
+  const api = (p) => (baseApi ? `${baseApi}${p}` : p);
 
   const [clientSecret, setClientSecret] = useState("");
-  const [status, setStatus] = useState("idle"); 
+  const [orderId, setOrderId] = useState("");
+  const [status, setStatus] = useState("idle"); // idle | loading | ready | error
   const [error, setError] = useState("");
 
-  const idempotencyKey = useMemo(
-    () => makeIdempotencyKey(amountCents, items),
-    [amountCents, items]
-  );
+  const idempotencyKey = useMemo(() => makeIdempotencyKey(items), [items]);
 
-  const payload = useMemo(() => {
+  const orderPayload = useMemo(() => {
     return {
-      amount: amountCents,
-      currency: "eur",
-      idempotencyKey,
-      items: (items || []).map((it) => ({
-        id: it.id,
-        label: it.productLabel,
-        qty: it.quantity,
-        price: it.price,
-      })),
-    };
-  }, [amountCents, idempotencyKey, items]);
+      items: (items || []).map((it) => {
+        const baseName =
+          it?.baseName ||
+          getBaseNameFromSrc(it?.originalSrc) ||
+          getBaseNameFromSrc(it?.mockupSrc) ||
+          (typeof it?.title === "string" ? it.title : "");
 
-  const createIntent = async () => {
+        return {
+          baseName,
+          productKey: it?.productKey,
+          qty: Number(it?.quantity ?? 1),
+          title: it?.title,
+          mockupUrl: it?.mockupSrc || null,
+        };
+      }),
+    };
+  }, [items]);
+
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  const createOrderAndIntent = async () => {
     setStatus("loading");
     setError("");
     setClientSecret("");
+    setOrderId("");
 
     try {
-      const res = await fetch(`${apiUrl}/create-payment-intent`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok || !data?.ok) {
-        throw new Error(data?.message || "Impossibile inizializzare il pagamento.");
+      if (!Array.isArray(orderPayload.items) || orderPayload.items.length === 0) {
+        throw new Error("Carrello vuoto.");
       }
 
-      setClientSecret(data.clientSecret);
+      // 1) CREATE ORDER
+      const orderRes = await fetch(api("/api/orders"), {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Idempotency-Key": idempotencyKey, 
+        },
+        body: JSON.stringify(orderPayload),
+      });
+
+      const orderData = await orderRes.json().catch(() => ({}));
+
+      if (!orderRes.ok || !orderData?.ok || !orderData?.order?._id) {
+        throw new Error(orderData?.message || "Impossibile creare l’ordine.");
+      }
+
+      const oid = orderData.order._id;
+
+      // 2) CREATE PAYMENT INTENT FOR THAT ORDER
+      const piRes = await fetch(api(`/api/orders/${oid}/payment-intent`), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const piData = await piRes.json().catch(() => ({}));
+
+      if (!piRes.ok || !piData?.ok || !piData?.clientSecret) {
+        throw new Error(piData?.message || "Impossibile inizializzare il pagamento.");
+      }
+
+      if (!mountedRef.current) return;
+
+      setOrderId(oid);
+      setClientSecret(piData.clientSecret);
       setStatus("ready");
     } catch (e) {
+      if (!mountedRef.current) return;
       setError(e?.message || "Connessione instabile. Riprova.");
       setStatus("error");
     }
   };
 
   useEffect(() => {
-    if (amountCents >= 50) createIntent();
+    if (amountCents >= 50) createOrderAndIntent();
   }, [amountCents, idempotencyKey]);
 
   const options = useMemo(() => ({ clientSecret }), [clientSecret]);
@@ -86,8 +139,12 @@ export default function CheckoutPanel({ amountCents, items }) {
       <div className="p-4 space-y-3">
         <div className="border-4 border-[#5D172E] bg-[#F2E8DA] p-3 text-[10px] shadow-[3px_3px_0px_0px_#5D172E]">
           <p className="font-bold uppercase mb-1">Payment_Status</p>
-          {status === "loading" && <p>INITIALISING_SECURE_CHANNEL ▌</p>}
-          {status === "ready" && <p>READY — Insert details below.</p>}
+          {status === "loading" && <p>CREATING_ORDER_AND_SECURE_CHANNEL ▌</p>}
+          {status === "ready" && orderId && (
+            <p>
+              READY — Order <span className="font-bold">#{orderId.slice(-6)}</span>
+            </p>
+          )}
           {status === "error" && <p>INTERRUPTED — No charge has been made.</p>}
           {status === "idle" && <p>STANDBY ▌</p>}
         </div>
@@ -98,7 +155,7 @@ export default function CheckoutPanel({ amountCents, items }) {
             <div className="mt-3">
               <button
                 type="button"
-                onClick={createIntent}
+                onClick={createOrderAndIntent}
                 className="border-4 border-[#5D172E] bg-white px-3 py-2 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E] active:translate-y-0.5 active:shadow-none"
               >
                 Retry
@@ -115,7 +172,7 @@ export default function CheckoutPanel({ amountCents, items }) {
 
         {status === "ready" && clientSecret && (
           <Elements stripe={stripePromise} options={options}>
-            <CheckoutForm />
+            <CheckoutForm orderId={orderId} />
           </Elements>
         )}
 

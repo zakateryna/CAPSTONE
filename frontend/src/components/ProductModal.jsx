@@ -71,7 +71,6 @@ export default function ProductModal({ photo, products, onClose }) {
 
   const toastTimerRef = useRef(null);
 
-  // ESC to close
   useEffect(() => {
     const onKeyDown = (e) => {
       if (e.key === "Escape") onClose?.();
@@ -80,30 +79,32 @@ export default function ProductModal({ photo, products, onClose }) {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [onClose]);
 
-  // Reset active product when photo/products change
   useEffect(() => {
     setActiveKey(Object.keys(products || {})[0] ?? null);
   }, [photo?.src, products]);
 
-  // Clean up toast timer on unmount
   useEffect(() => {
     return () => {
       if (toastTimerRef.current) window.clearTimeout(toastTimerRef.current);
     };
   }, []);
 
-  const baseName = useMemo(() => getBaseFileName(photo?.src), [photo?.src]);
+  const baseName = useMemo(() => {
+    if (photo?.baseName) return photo.baseName;
+    return getBaseFileName(photo?.src);
+  }, [photo?.baseName, photo?.src]);
+
+  const kind = useMemo(() => getProductKind(activeKey), [activeKey]);
 
   const activeProduct = useMemo(() => {
     if (!activeKey) return null;
     return products?.[activeKey] ?? null;
   }, [activeKey, products]);
 
-  const kind = useMemo(() => getProductKind(activeKey), [activeKey]);
 
   const mockupSrc = useMemo(() => {
     if (!baseName || !activeProduct) return null;
-    return `/images/mockups/${baseName}${activeProduct.suffix}`;
+    return `/assets/images/mockups/${baseName}${activeProduct.suffix}`;
   }, [baseName, activeProduct]);
 
   if (!photo || !products || !activeProduct) return null;
@@ -119,7 +120,7 @@ export default function ProductModal({ photo, products, onClose }) {
       mockupSrc,
       productKey: activeKey,
       productLabel: activeProduct.label,
-      price: activeProduct.price,
+      price: activeProduct.priceCents / 100,
       variant: { size: null, option: null },
     });
 
@@ -154,7 +155,7 @@ export default function ProductModal({ photo, products, onClose }) {
             </div>
 
             <span className="bg-[#5D172E] text-white px-2 py-0.5 text-[10px] font-bold shadow-[2px_2px_0px_0px_rgba(0,0,0,0.2)]">
-              €{activeProduct.price.toFixed(2)}
+              €{(activeProduct.priceCents / 100).toFixed(2)}
             </span>
           </div>
 

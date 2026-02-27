@@ -4,22 +4,20 @@ import ArchiveIntro from "../components/ArchiveIntro";
 import Gallery from "../components/Gallery";
 import ProductModal from "../components/ProductModal";
 
-import { PRODUCT_TYPES } from "../data/productTypes";
-
-export default function ShopPage({ photos }) {
+export default function ShopPage({ photos, productTypes }) {
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
-  // prodotto list è costante: volendo puoi anche NON usare useMemo
-  const productList = PRODUCT_TYPES;
+  const productList = productTypes || {};
 
   const shopPhotos = useMemo(
-    () => photos.filter((p) => p.mode === "SHOP"),
+    () => (photos || []).filter((p) => p.mode === "SHOP"),
     [photos]
   );
 
   const handleCellClick = (photo) => {
     if (!photo) return;
     if (photo.mode !== "SHOP") return;
+    if (!productTypes) return;
     setSelectedPhoto(photo);
   };
 
@@ -42,7 +40,7 @@ export default function ShopPage({ photos }) {
         onCloseProject={undefined}
       />
 
-      {selectedPhoto && (
+      {selectedPhoto && productTypes && (
         <ProductModal
           photo={selectedPhoto}
           products={productList}

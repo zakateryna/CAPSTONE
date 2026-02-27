@@ -18,10 +18,8 @@ function loadInitialState() {
   const raw = window.localStorage.getItem(STORAGE_KEY);
   const data = raw ? safeParse(raw, { items: [] }) : { items: [] };
 
-  // Hardening: se qualcuno ha sporcato localStorage
   if (!data || !Array.isArray(data.items)) return { items: [] };
 
-  // Normalizzazione minima
   const items = data.items
     .filter((x) => x && typeof x.id === "string")
     .map((x) => ({
@@ -80,19 +78,15 @@ function cartReducer(state, action) {
 }
 
 export function CartProvider({ children }) {
-  // Lazy init: esegue loadInitialState SOLO una volta
   const [state, dispatch] = useReducer(cartReducer, undefined, loadInitialState);
 
-  // Persistenza: salva quando cambiano gli items (non ad ogni render)
   useEffect(() => {
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ items: state.items }));
     } catch {
-      // se localStorage è pieno o bloccato, non rompiamo l’app
     }
   }, [state.items]);
 
-  // Callbacks stabili → meno re-render in giro
   const addItem = useCallback((payload) => dispatch({ type: "ADD_ITEM", payload }), []);
   const removeItem = useCallback((id) => dispatch({ type: "REMOVE_ITEM", payload: id }), []);
   const setQty = useCallback((id, quantity) => dispatch({ type: "SET_QTY", payload: { id, quantity } }), []);

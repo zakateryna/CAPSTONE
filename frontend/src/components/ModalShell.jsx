@@ -2,7 +2,6 @@ import { useEffect } from "react";
 
 export default function ModalShell({ title, children, onClose }) {
   useEffect(() => {
-    // blocca lo scroll della pagina sotto (utile su mobile)
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
@@ -12,7 +11,6 @@ export default function ModalShell({ title, children, onClose }) {
 
   return (
     <div className="fixed inset-0 z-[60]">
-      {/* backdrop */}
       <button
         type="button"
         aria-label="Close modal"
@@ -20,9 +18,7 @@ export default function ModalShell({ title, children, onClose }) {
         className="absolute inset-0 bg-black/60"
       />
 
-      {/* ✅ container scrollabile */}
       <div className="relative h-[100dvh] overflow-y-auto p-3 md:p-6">
-        {/* panel */}
         <div className="max-w-5xl mx-auto">
           <div className="border-4 border-[#5D172E] bg-[#F2E8DA] shadow-[8px_8px_0px_0px_#5D172E] overflow-hidden">
             <div className="p-3 border-b-4 border-[#5D172E] bg-[#FFD166] flex items-center justify-between">
@@ -40,7 +36,6 @@ export default function ModalShell({ title, children, onClose }) {
               </button>
             </div>
 
-            {/* ✅ contenuto con padding, scroll gestito dal container sopra */}
             <div className="p-4">{children}</div>
           </div>
         </div>
