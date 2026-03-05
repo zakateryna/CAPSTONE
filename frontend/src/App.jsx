@@ -10,6 +10,8 @@ import ShopPage from "./pages/ShopPage";
 import AboutPage from "./pages/AboutPage";
 import TermsPage from "./pages/TermsAndConditions";
 import PrivacyPage from "./pages/PrivacyPolicy";
+import AdminOrdersPage from "./pages/AdminOrdersPage";
+
 
 function normalizePhotos(payload) {
   if (Array.isArray(payload)) return payload;
@@ -96,6 +98,10 @@ export default function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
+
+        <Route path="/admin/orders" element={<AdminOrdersPage />} />
+
+        
       </Routes>
 </div>
 

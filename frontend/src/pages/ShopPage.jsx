@@ -25,12 +25,14 @@ export default function ShopPage({ photos, productTypes }) {
 
   return (
     <main className="p-4 max-w-5xl mx-auto">
-      <ArchiveIntro title="INDEX_BY_ZAKA" channel="Channel_02 — Shop">
-        <p className="font-bold uppercase opacity-80">
+      <ArchiveIntro title="INDEX_BY_ZAKA">
+        <p className="text-xl md:text-2xl font-bold uppercase opacity-80 tracking-wide">
           Selected works available as objects.
         </p>
-        <p>Choose a photo. Pick a product type.</p>
-        <p>Poster / Tote / Mug / Notebook</p>
+
+        <p className="mt-4 text-base md:text-lg">
+          Choose a photo. Pick a product type.
+        </p>
       </ArchiveIntro>
 
       <Gallery

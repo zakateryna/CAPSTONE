@@ -27,7 +27,7 @@ export default function CheckoutForm({ orderId }) {
     });
 
     if (error) {
-      setMsg(error.message || "Pagamento non completato. Riprova.");
+      setMsg(error.message || "Payment not completed. Please try again.");
       setLoading(false);
       return;
     }
@@ -35,25 +35,25 @@ export default function CheckoutForm({ orderId }) {
 
   return (
     <form onSubmit={onSubmit} className="space-y-3">
-      <div className="border-4 border-[#5D172E] bg-white p-3 shadow-[3px_3px_0px_0px_#5D172E]">
+      <div className="ui-panel bg-white">
         <PaymentElement />
       </div>
 
       <button
         type="submit"
         disabled={!stripe || loading}
-        className="w-full border-4 border-[#5D172E] bg-[#5D172E] text-[#FFD166] px-4 py-3 text-[10px] font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5 active:shadow-none disabled:opacity-60"
+        className="ui-btn-primary disabled:opacity-60 disabled:pointer-events-none"
       >
         {loading ? "PROCESSING ▌" : "Confirm_Payment"}
       </button>
 
       {msg && (
-        <div className="border-4 border-[#5D172E] bg-[#FFD166] p-3 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E]">
-          {msg}
+        <div className="ui-panel ui-panel-warn">
+          <p className="ui-label">{msg}</p>
         </div>
       )}
 
-      <p className="text-[10px] opacity-70">
+      <p className="text-xs md:text-sm opacity-70">
         No panic: if something fails, you won’t be charged.
       </p>
     </form>

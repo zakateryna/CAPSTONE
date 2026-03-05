@@ -80,7 +80,7 @@ export default function CheckoutPanel({ amountCents, items }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Idempotency-Key": idempotencyKey, 
+          "X-Idempotency-Key": idempotencyKey,
         },
         body: JSON.stringify(orderPayload),
       });
@@ -119,26 +119,27 @@ export default function CheckoutPanel({ amountCents, items }) {
 
   useEffect(() => {
     if (amountCents >= 50) createOrderAndIntent();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amountCents, idempotencyKey]);
 
   const options = useMemo(() => ({ clientSecret }), [clientSecret]);
 
   return (
-    <div className="border-4 border-[#5D172E] bg-white shadow-[4px_4px_0px_0px_#5D172E] overflow-hidden">
-      <div className="border-b-4 border-[#5D172E] p-3 bg-[#FFD166] flex items-center justify-between">
+    <div className="ui-card-sm">
+      <div className="ui-bar bg-[color:var(--color-retro-yellow)]">
         <div className="flex items-center gap-2 font-bold">
-          <span className="material-symbols-outlined text-sm">credit_card</span>
-          <h3 className="text-xs font-bold uppercase tracking-tighter">Checkout</h3>
+          <span className="material-symbols-outlined text-base">credit_card</span>
+          <h3 className="ui-label">Checkout</h3>
         </div>
 
-        <span className="text-[10px] font-bold uppercase opacity-80">
+        <span className="text-xs md:text-sm font-bold uppercase tracking-wide opacity-80">
           Total €{(amountCents / 100).toFixed(2)}
         </span>
       </div>
 
       <div className="p-4 space-y-3">
-        <div className="border-4 border-[#5D172E] bg-[#F2E8DA] p-3 text-[10px] shadow-[3px_3px_0px_0px_#5D172E]">
-          <p className="font-bold uppercase mb-1">Payment_Status</p>
+        <div className="ui-panel ui-panel-soft text-xs md:text-sm">
+          <p className="ui-label mb-1">Payment_Status</p>
           {status === "loading" && <p>CREATING_ORDER_AND_SECURE_CHANNEL ▌</p>}
           {status === "ready" && orderId && (
             <p>
@@ -150,14 +151,10 @@ export default function CheckoutPanel({ amountCents, items }) {
         </div>
 
         {status === "error" && (
-          <div className="border-4 border-[#5D172E] bg-[#FFD166] p-3 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E]">
-            {error}
+          <div className="ui-panel ui-panel-warn text-xs md:text-sm">
+            <div className="ui-label">{error}</div>
             <div className="mt-3">
-              <button
-                type="button"
-                onClick={createOrderAndIntent}
-                className="border-4 border-[#5D172E] bg-white px-3 py-2 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E] active:translate-y-0.5 active:shadow-none"
-              >
+              <button type="button" onClick={createOrderAndIntent} className="ui-btn">
                 Retry
               </button>
             </div>
@@ -165,7 +162,7 @@ export default function CheckoutPanel({ amountCents, items }) {
         )}
 
         {status === "loading" && (
-          <div className="border-4 border-[#5D172E] bg-white p-4 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E]">
+          <div className="ui-panel bg-white text-xs md:text-sm ui-label">
             Connecting_to_Stripe ▌
           </div>
         )}
@@ -176,7 +173,7 @@ export default function CheckoutPanel({ amountCents, items }) {
           </Elements>
         )}
 
-        <p className="text-[10px] opacity-70">
+        <p className="text-xs md:text-sm opacity-70">
           Your card details are processed securely by Stripe.
         </p>
       </div>

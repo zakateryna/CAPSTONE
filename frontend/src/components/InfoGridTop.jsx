@@ -3,13 +3,13 @@ import { Link } from "react-router-dom";
 export default function InfoGridTop() {
   return (
     <section className="mt-10">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
         <InfoCard color="bg-[#93D5B3]" icon="hub" title="Index_Events">
-          <p className="text-[11px] leading-relaxed opacity-80">
-            INDEX BY ZAKA nasce come uno spazio ibrido. Un luogo in cui l’arte
-            convive con il prodotto e il prodotto attraversa la massa. Un archivio
-            in movimento dove l’immagine può diventare oggetto, e l’oggetto può
-            tornare racconto.
+          <p className="text-sm md:text-base leading-relaxed opacity-80">
+            INDEX BY ZAKA is born as a hybrid space. A place where art coexists
+            with product, and product moves through the mass. A living archive in
+            motion, where an image can become an object, and the object can
+            return as a story.
           </p>
 
           <div className="mt-3 flex flex-wrap gap-2">
@@ -20,18 +20,19 @@ export default function InfoGridTop() {
         </InfoCard>
 
         <InfoCard color="bg-[#FFD166]" icon="auto_awesome" title="About_Project.txt">
-          <p className="text-[11px] leading-relaxed opacity-80">
-            Se desideri collezionare anche tu un frammento del progetto, puoi
-            farlo attraverso lo shop. Ogni prodotto è una versione dedicata
-            dell’opera, pensata per essere vissuta nella quotidianità.
-          </p>
+          <div className="flex flex-col h-full">
+            <p className="text-sm md:text-base leading-relaxed opacity-80">
+              If you wish to collect a fragment of the project, you can explore the
+              shop. Each product represents a dedicated edition of the work, created
+              to exist within daily life.
+            </p>
 
-          <Link
-            to="/shop"
-            className="inline-block mt-4 border-4 border-[#5D172E] bg-white px-3 py-2 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E] transition-all active:translate-y-0.5 active:shadow-none"
-          >
-            Click_to_collect
-          </Link>
+            <div className="mt-auto pt-4">
+              <Link to="/shop" className="ui-btn">
+                Click_to_collect
+              </Link>
+            </div>
+          </div>
         </InfoCard>
       </div>
     </section>
@@ -40,29 +41,26 @@ export default function InfoGridTop() {
 
 function InfoCard({ color, icon, title, subtitle, children }) {
   return (
-    <div className="border-4 border-[#5D172E] bg-white shadow-[6px_6px_0px_0px_#5D172E] overflow-hidden">
-      <div
-        className={`${color} border-b-4 border-[#5D172E] p-3 text-[#5D172E] flex items-center justify-between`}
-      >
+    <div className="ui-card flex flex-col h-full">
+      <div className={`ui-bar ${color}`}>
         <div className="flex items-center gap-2 font-bold">
-          <span className="material-symbols-outlined">{icon}</span>
+          <span className="material-symbols-outlined text-base">{icon}</span>
           <div>
-            <h3 className="text-xs uppercase">{title}</h3>
+            <h3 className="ui-label">{title}</h3>
             {subtitle ? (
-              <p className="text-[10px] font-bold opacity-80">{subtitle}</p>
+              <p className="text-xs md:text-sm font-bold opacity-80 tracking-wide">
+                {subtitle}
+              </p>
             ) : null}
           </div>
         </div>
       </div>
-      <div className="p-4">{children}</div>
+
+      <div className="p-4 flex-1">{children}</div>
     </div>
   );
 }
 
 function Badge({ children }) {
-  return (
-    <span className="border-2 border-[#5D172E] px-2 py-1 text-[10px] font-bold uppercase bg-white">
-      {children}
-    </span>
-  );
+  return <span className="ui-badge">{children}</span>;
 }

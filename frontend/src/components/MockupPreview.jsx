@@ -1,65 +1,84 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export default function MockupPreview({ title, originalSrc, mockupSrc }) {
-  
-  const [mode, setMode] = useState("mockup"); 
-  const srcToShow = mode === "mockup" ? mockupSrc : originalSrc;
+  const [mode, setMode] = useState("mockup");
+  const [imgError, setImgError] = useState(false);
+
+  const srcToShow = useMemo(() => {
+    return mode === "mockup" ? mockupSrc : originalSrc;
+  }, [mode, mockupSrc, originalSrc]);
+
+  const ToggleBtn = ({ isActive, children, onClick }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={isActive}
+      className={[
+        "ui-btn px-2 py-1",
+        isActive ? "bg-[color:var(--color-retro-yellow)]" : "bg-white",
+      ].join(" ")}
+    >
+      {children}
+    </button>
+  );
+
+  const showFallback = !srcToShow || imgError;
 
   return (
-    <div className="border-4 border-[#5D172E] bg-white shadow-[6px_6px_0px_0px_#5D172E] overflow-hidden">
-      <div className="border-b-4 border-[#5D172E] p-3 bg-[#93D5B3] text-[#5D172E] flex items-center justify-between">
+    <div className="ui-card">
+      <div className="ui-bar bg-[#93D5B3]">
         <div className="flex items-center gap-2 font-bold">
-          <span className="material-symbols-outlined">image</span>
+          <span className="material-symbols-outlined text-base">image</span>
+          <span className="ui-label">Preview</span>
         </div>
 
         <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => setMode("mockup")}
-            className={`border-4 border-[#5D172E] px-2 py-1 text-[10px] font-bold uppercase ${
-              mode === "mockup" ? "bg-[#FFD166]" : "bg-white"
-            } shadow-[3px_3px_0px_0px_#5D172E] active:translate-y-0.5 active:shadow-none`}
+          <ToggleBtn
+            isActive={mode === "mockup"}
+            onClick={() => {
+              setMode("mockup");
+              setImgError(false);
+            }}
           >
             Mockup
-          </button>
+          </ToggleBtn>
 
-          <button
-            type="button"
-            onClick={() => setMode("original")}
-            className={`border-4 border-[#5D172E] px-2 py-1 text-[10px] font-bold uppercase ${
-              mode === "original" ? "bg-[#FFD166]" : "bg-white"
-            } shadow-[3px_3px_0px_0px_#5D172E] active:translate-y-0.5 active:shadow-none`}
+          <ToggleBtn
+            isActive={mode === "original"}
+            onClick={() => {
+              setMode("original");
+              setImgError(false);
+            }}
           >
             Original
-          </button>
+          </ToggleBtn>
         </div>
       </div>
 
       <div className="p-4">
-        <div className="relative aspect-square border-4 border-[#5D172E] bg-[#f8f8f8] flex items-center justify-center overflow-hidden">
-          {srcToShow ? (
+        <div className="relative aspect-square border-4 border-[color:var(--color-primary)] bg-[#f8f8f8] flex items-center justify-center overflow-hidden">
+          {!showFallback && (
             <img
               src={srcToShow}
               alt={title}
               className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.src = "https://via.placeholder.com/800?text=Mockup+Missing";
-              }}
+              onError={() => setImgError(true)}
             />
-          ) : (
-            <div className="text-center opacity-20">
+          )}
+
+          {showFallback && (
+            <div className="text-center opacity-30">
               <span className="material-symbols-outlined text-4xl">image_search</span>
-              <p className="text-[10px] font-bold uppercase mt-2">Missing_Source</p>
+              <p className="ui-label mt-2">Missing_Source</p>
             </div>
           )}
 
-          <div className="absolute inset-0 z-30 opacity-5 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
+          <div className="absolute inset-0 z-30 opacity-[0.06] pointer-events-none bg-[linear-gradient(0deg,rgba(0,0,0,0.15)_1px,transparent_1px)] [background-size:4px_4px]" />
         </div>
 
-       <p className="mt-2 text-[10px] opacity-70">
-  Showing: <span className="font-bold">{title}</span>
-</p>
-
+        <p className="mt-2 text-xs md:text-sm opacity-70">
+          Showing: <span className="font-bold">{title}</span>
+        </p>
       </div>
     </div>
   );

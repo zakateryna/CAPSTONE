@@ -5,12 +5,13 @@ export default function InfoGridBottom() {
     <section className="mt-10">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <InfoCard color="bg-[#7EB3D1]" icon="mail" title="Contacts">
-          <p className="text-[11px] leading-relaxed opacity-80">
-            Questo archivio rimane aperto a connessioni. Collaborazioni,
-            proposte, conversazioni o semplici segnali di presenza.
+          <p className="text-sm md:text-base leading-relaxed opacity-80">
+            This archive remains open to connection.
+            To collaborations, proposals, conversations,
+            or even the simplest signal of presence.
           </p>
 
-          <div className="mt-3 text-[11px] space-y-1">
+          <div className="mt-3 text-sm md:text-base space-y-1">
             <p>
               Email: <span className="font-bold">hello@indexbyzaka.it</span>
             </p>
@@ -18,19 +19,14 @@ export default function InfoGridBottom() {
 
           <a
             href="mailto:hello@indexbyzaka.it"
-            className="inline-block mt-4 border-4 border-[#5D172E] bg-white px-3 py-2 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E] transition-all active:translate-y-0.5 active:shadow-none"
+            className="inline-block mt-4 ui-btn"
           >
             Send_Message
           </a>
         </InfoCard>
 
-        <InfoCard
-          color="bg-[#B8B8FF]"
-          icon="gavel"
-          title="Legal_Framework.sys"
-          subtitle="Transparency & Terms"
-        >
-          <ul className="text-[11px] opacity-80 space-y-2 list-disc pl-4">
+        <InfoCard color="bg-[#B8B8FF]" icon="gavel" title="Legal_Framework">
+          <ul className="text-sm md:text-base opacity-80 space-y-2 list-disc pl-4">
             <li>
               <Link to="/terms" className="hover:underline">
                 Terms_And_Conditions
@@ -44,7 +40,6 @@ export default function InfoGridBottom() {
             <li>Cookie_Policy</li>
             <li>Shipping_And_Returns</li>
           </ul>
-
         </InfoCard>
       </div>
     </section>
@@ -53,20 +48,21 @@ export default function InfoGridBottom() {
 
 function InfoCard({ color, icon, title, subtitle, children }) {
   return (
-    <div className="border-4 border-[#5D172E] bg-white shadow-[6px_6px_0px_0px_#5D172E] overflow-hidden">
-      <div
-        className={`${color} border-b-4 border-[#5D172E] p-3 text-[#5D172E] flex items-center justify-between`}
-      >
+    <div className="ui-card">
+      <div className={`ui-bar ${color}`}>
         <div className="flex items-center gap-2 font-bold">
-          <span className="material-symbols-outlined">{icon}</span>
+          <span className="material-symbols-outlined text-base">{icon}</span>
           <div>
-            <h3 className="text-xs uppercase">{title}</h3>
+            <h3 className="ui-label">{title}</h3>
             {subtitle ? (
-              <p className="text-[10px] font-bold opacity-80">{subtitle}</p>
+              <p className="text-xs md:text-sm font-bold opacity-80 tracking-wide">
+                {subtitle}
+              </p>
             ) : null}
           </div>
         </div>
       </div>
+
       <div className="p-4">{children}</div>
     </div>
   );

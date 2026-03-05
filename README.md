@@ -1,4 +1,5 @@
 Retro Pop Gallery - Index_By_Zaka
+git clone https://github.com/zakateryna/CAPSTONE.git
 
 Index_By_Zaka è una piattaforma e-commerce full-stack dedicata alla vendita di stampe artistiche e prodotti personalizzati (poster, notebook, mug, tote bag) a partire da fotografie originali.
 Il progetto è sviluppato con architettura separata frontend + backend, integra pagamenti tramite Stripe e salva gli ordini lato server.
@@ -43,7 +44,6 @@ Flusso:
 -Stripe invia webhook al backend
 4) Il backend verifica l’evento e salva l’ordine
 
-git clone https://github.com/zakateryna/CAPSTONE.git
 
 Struttura del progetto 
 

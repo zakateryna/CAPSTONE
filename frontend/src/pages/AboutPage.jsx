@@ -16,9 +16,18 @@ export default function AboutPage({ photos = [] }) {
 
   return (
     <main className="p-4 max-w-5xl mx-auto">
-      <ArchiveIntro title="INDEX_BY_ZAKA" channel="Channel_03 — About">
-        <p className="font-bold uppercase opacity-80">Project_Notes.sys</p>
-        <p>Monthly dedication + external link node.</p>
+      <ArchiveIntro title="INDEX_BY_ZAKA">
+        <p className="text-xl md:text-2xl font-bold uppercase opacity-80 tracking-wide">
+          A living visual archive.
+        </p>
+
+        <p className="mt-4 text-base md:text-lg">
+          An evolving system of fragments.
+        </p>
+
+        <p className="text-base md:text-lg">
+          Images shift between observation and object.
+        </p>
       </ArchiveIntro>
 
       <InfoGridTop />
@@ -28,10 +37,10 @@ export default function AboutPage({ photos = [] }) {
         {palermo && (
           <div className="border-4 border-[#5D172E] bg-white shadow-[4px_4px_0px_0px_#5D172E] overflow-hidden">
             <div className="border-b-4 border-[#5D172E] p-3 bg-[#FFD166] flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-tighter">
-                Monthly_Dedication
+              <span className="text-sm md:text-base font-bold uppercase tracking-wide">
+                Monthly Dedication
               </span>
-              <span className="text-[10px] font-bold uppercase opacity-80">
+              <span className="text-xs md:text-sm font-bold uppercase opacity-80 tracking-wide">
                 PALERMO
               </span>
             </div>
@@ -42,11 +51,13 @@ export default function AboutPage({ photos = [] }) {
               className="block w-full h-64 object-cover"
             />
 
-            <div className="p-4 text-xs space-y-1">
-              <p className="font-bold uppercase opacity-80">
-                {palermo.note || "Featured_Fragment"}
+            <div className="p-4 text-sm md:text-base space-y-2">
+              <p className="font-bold uppercase opacity-80 tracking-wide">
+                {palermo.note || "Featured Fragment"}
               </p>
-              <p>Selected piece — exhibited inside the archive system.</p>
+              <p>
+                Selected piece — exhibited inside the archive system.
+              </p>
             </div>
           </div>
         )}
@@ -55,11 +66,8 @@ export default function AboutPage({ photos = [] }) {
         {golden && (
           <div className="border-4 border-[#5D172E] bg-white shadow-[4px_4px_0px_0px_#5D172E] overflow-hidden">
             <div className="border-b-4 border-[#5D172E] p-3 bg-[#FF8E72] flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-tighter">
-                Golden_Ticket
-              </span>
-              <span className="text-[10px] font-bold uppercase opacity-80">
-                LINK_NODE
+              <span className="text-sm md:text-base font-bold uppercase tracking-wide">
+                Golden Ticket
               </span>
             </div>
 
@@ -69,8 +77,10 @@ export default function AboutPage({ photos = [] }) {
               className="block w-full h-64 object-cover"
             />
 
-            <div className="p-4 text-xs space-y-2">
-              <p className="font-bold uppercase opacity-80">External_Node</p>
+            <div className="p-4 text-sm md:text-base space-y-2">
+              <p className="font-bold uppercase opacity-80 tracking-wide">
+                External Node
+              </p>
               <p className="opacity-80">
                 Opens a destination outside the archive environment.
               </p>
@@ -80,9 +90,9 @@ export default function AboutPage({ photos = [] }) {
                   href={golden.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-block mt-1 border-4 border-[#5D172E] bg-white px-3 py-2 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#5D172E] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#5D172E]"
+                  className="inline-block mt-2 border-4 border-[#5D172E] bg-white px-4 py-2 text-xs md:text-sm font-bold uppercase tracking-wide shadow-[3px_3px_0px_0px_#5D172E] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#5D172E] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_0px_#5D172E]"
                 >
-                  Open_Link →
+                  Open Link →
                 </a>
               )}
             </div>

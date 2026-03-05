@@ -9,7 +9,7 @@ export default function CartPage() {
   const isPaid = searchParams.get("paid") === "1";
   const orderId = searchParams.get("order");
   const [showCheckout, setShowCheckout] = useState(false);
-  const [orderStatus, setOrderStatus] = useState(null); 
+  const [orderStatus, setOrderStatus] = useState(null);
   const [orderMsg, setOrderMsg] = useState("");
   const subtotalCents = Math.round(subtotal * 100);
   const cleanupTimerRef = useRef(null);
@@ -68,10 +68,12 @@ export default function CartPage() {
       if (!isPaid || !orderId) return;
 
       setOrderMsg("");
-      setOrderStatus(null); 
+      setOrderStatus(null);
 
       try {
-        const res = await fetch(`/api/orders/${orderId}`, { signal: controller.signal });
+        const res = await fetch(`/api/orders/${orderId}`, {
+          signal: controller.signal,
+        });
         const data = await res.json().catch(() => ({}));
 
         if (!res.ok || !data?.ok || !data?.order) {
@@ -117,45 +119,45 @@ export default function CartPage() {
       {banner && (
         <div
           className={[
-            "mb-4 border-4 border-[#5D172E] text-[#5D172E] shadow-[6px_6px_0px_0px_#5D172E] p-4",
-            banner.kind === "ok" ? "bg-[#93D5B3]" : "bg-[#FFD166]",
+            "mb-4 ui-card p-4 text-[color:var(--color-primary)]",
+            banner.kind === "ok"
+              ? "bg-[#93D5B3]"
+              : "bg-[color:var(--color-retro-yellow)]",
           ].join(" ")}
         >
           <div className="flex items-start gap-2">
-            <span className="material-symbols-outlined text-sm">
+            <span className="material-symbols-outlined text-base">
               {banner.kind === "ok" ? "verified" : "info"}
             </span>
             <div>
-              <p className="text-[10px] font-bold uppercase">{banner.title}</p>
-              <p className="text-[11px] opacity-80 mt-1">{banner.text}</p>
+              <p className="ui-label">{banner.title}</p>
+              <p className="ui-body opacity-80 mt-1">{banner.text}</p>
             </div>
           </div>
         </div>
       )}
 
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-sm font-bold uppercase tracking-tighter flex items-center gap-2">
-          <span className="material-symbols-outlined">shopping_cart</span>
+        <h1 className="text-base md:text-lg font-bold uppercase tracking-wide flex items-center gap-2">
+          <span className="material-symbols-outlined text-base">shopping_cart</span>
           Cart.sys
         </h1>
 
-        <button
-          type="button"
-          onClick={clear}
-          className="border-4 border-[#5D172E] bg-white px-2 py-1 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E] active:translate-y-0.5 active:shadow-none"
-        >
+        <button type="button" onClick={clear} className="ui-btn">
           Clear_All
         </button>
       </div>
 
       {items.length === 0 ? (
-        <div className="border-4 border-[#5D172E] bg-white shadow-[6px_6px_0px_0px_#5D172E] p-6 text-center">
-          <p className="text-xs font-bold uppercase opacity-70">Cart_Empty</p>
-          <p className="text-[10px] opacity-70 mt-2">Add something from the gallery.</p>
+        <div className="ui-card p-6 text-center">
+          <p className="ui-label opacity-70">Cart_Empty</p>
+          <p className="text-xs md:text-sm opacity-70 mt-2">
+            Add something from the gallery.
+          </p>
 
           <Link
             to="/"
-            className="inline-block mt-4 border-4 border-[#5D172E] bg-[#FFD166] px-4 py-2 text-[10px] font-bold uppercase shadow-[4px_4px_0px_0px_#5D172E] active:translate-y-0.5 active:shadow-none"
+            className="inline-block mt-4 ui-btn bg-[color:var(--color-retro-yellow)]"
           >
             Return_To_Archive.exe
           </Link>
@@ -163,26 +165,20 @@ export default function CartPage() {
       ) : (
         <div className="grid grid-cols-1 gap-4">
           {items.map((item) => (
-            <div
-              key={item.id}
-              className="border-4 border-[#5D172E] bg-white shadow-[6px_6px_0px_0px_#5D172E] overflow-hidden"
-            >
-              <div className="border-b-4 border-[#5D172E] p-3 bg-[#FFD166] flex items-center justify-between">
-                <div className="text-[10px] font-bold uppercase">
-                  {item.productLabel} <span className="opacity-60">/</span> {item.title}
+            <div key={item.id} className="ui-card">
+              <div className="ui-bar bg-[color:var(--color-retro-yellow)]">
+                <div className="text-xs md:text-sm font-bold uppercase tracking-wide">
+                  {item.productLabel} <span className="opacity-60">/</span>{" "}
+                  {item.title}
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => removeItem(item.id)}
-                  className="border-4 border-[#5D172E] bg-white px-2 py-1 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E] active:translate-y-0.5 active:shadow-none"
-                >
+                <button type="button" onClick={() => removeItem(item.id)} className="ui-btn">
                   Remove
                 </button>
               </div>
 
               <div className="p-4 grid grid-cols-1 md:grid-cols-[120px_1fr_160px] gap-4 items-center">
-                <div className="aspect-square border-4 border-[#5D172E] bg-[#f8f8f8] overflow-hidden">
+                <div className="aspect-square border-4 border-[color:var(--color-primary)] bg-[#f8f8f8] overflow-hidden">
                   <img
                     src={item.mockupSrc || item.originalSrc}
                     alt={item.title}
@@ -191,15 +187,17 @@ export default function CartPage() {
                 </div>
 
                 <div>
-                  <p className="text-[10px] uppercase font-bold">Price</p>
-                  <p className="text-xs font-bold">€{item.price.toFixed(2)}</p>
+                  <p className="ui-label">Price</p>
+                  <p className="text-sm md:text-base font-bold">
+                    €{item.price.toFixed(2)}
+                  </p>
                 </div>
 
                 <div className="flex items-center gap-2 justify-start md:justify-end">
                   <button
                     type="button"
                     onClick={() => setQty(item.id, item.quantity - 1)}
-                    className="w-10 h-10 border-4 border-[#5D172E] bg-white shadow-[3px_3px_0px_0px_#5D172E] active:translate-y-0.5 active:shadow-none font-bold"
+                    className="ui-btn w-10 h-10 px-0 py-0 flex items-center justify-center text-base"
                     aria-label="Decrease quantity"
                   >
                     -
@@ -210,14 +208,14 @@ export default function CartPage() {
                     min="1"
                     value={item.quantity}
                     onChange={(e) => setQty(item.id, Number(e.target.value))}
-                    className="w-16 h-10 border-4 border-[#5D172E] text-center font-bold"
+                    className="w-16 h-10 border-4 border-[color:var(--color-primary)] text-center font-bold text-base bg-white"
                     aria-label="Quantity"
                   />
 
                   <button
                     type="button"
                     onClick={() => setQty(item.id, item.quantity + 1)}
-                    className="w-10 h-10 border-4 border-[#5D172E] bg-white shadow-[3px_3px_0px_0px_#5D172E] active:translate-y-0.5 active:shadow-none font-bold"
+                    className="ui-btn w-10 h-10 px-0 py-0 flex items-center justify-center text-base"
                     aria-label="Increase quantity"
                   >
                     +
@@ -225,32 +223,36 @@ export default function CartPage() {
                 </div>
               </div>
 
-              <div className="border-t-4 border-[#5D172E] p-3 flex justify-between text-[10px] font-bold uppercase">
+              <div className="border-t-4 border-[color:var(--color-primary)] p-3 flex justify-between text-xs md:text-sm font-bold uppercase tracking-wide">
                 <span>Line_Total</span>
                 <span>€{(item.price * item.quantity).toFixed(2)}</span>
               </div>
             </div>
           ))}
 
-          <div className="border-4 border-[#5D172E] bg-white shadow-[6px_6px_0px_0px_#5D172E] p-4 flex justify-between items-center">
-            <span className="text-xs font-bold uppercase">Subtotal</span>
-            <span className="text-sm font-bold">€{subtotal.toFixed(2)}</span>
+          <div className="ui-card p-4 flex justify-between items-center">
+            <span className="text-sm md:text-base font-bold uppercase tracking-wide">
+              Subtotal
+            </span>
+            <span className="text-base md:text-lg font-bold">
+              €{subtotal.toFixed(2)}
+            </span>
           </div>
 
           {!showCheckout && (
             <button
               type="button"
               onClick={() => setShowCheckout(true)}
-              className="w-full bg-[#5D172E] text-[#FFD166] py-4 font-bold uppercase shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none transition-all"
+              className="ui-btn-primary"
             >
               Checkout.exe
             </button>
           )}
 
           {showCheckout && subtotalCents < 50 && (
-            <div className="border-4 border-[#5D172E] bg-white shadow-[6px_6px_0px_0px_#5D172E] p-4 text-[10px] font-bold uppercase">
-              PAYMENT_GATE — Minimum not reached
-              <div className="mt-2 text-[11px] opacity-80 normal-case font-normal">
+            <div className="ui-card p-4">
+              <div className="ui-label">PAYMENT_GATE — Minimum not reached</div>
+              <div className="mt-2 ui-body opacity-80 normal-case font-normal">
                 Add a small item to continue. No charges will happen until you confirm.
               </div>
             </div>

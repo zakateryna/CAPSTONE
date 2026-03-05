@@ -8,7 +8,10 @@ import fs from "fs";
 import { connectDB } from "./src/db/connect.js";
 import ordersRouter from "./src/routes/orders.routes.js";
 import stripeWebhookRouter from "./src/routes/stripe.webhook.routes.js";
+import starsRouter from "./src/routes/stars.routes.js";
 import { PRODUCT_TYPES } from "./src/config/catalog.js";
+import adminOrdersRouter from "./src/routes/admin.orders.routes.js";
+
 
 const app = express();
 
@@ -28,6 +31,9 @@ app.use(express.json());
 
 /* Routes API */
 app.use("/api/orders", ordersRouter);
+
+/* Stars (no DB — in-memory) */
+app.use("/api/stars", starsRouter);
 
 /* Product types */
 app.get("/api/product-types", (_req, res) => {
@@ -69,12 +75,13 @@ function buildPhotoList() {
   const meta = readPhotosMeta();
   const files = readPhotoFiles();
 
-  const photos = files.map((file, index) => {
+  const photos = files.map((file) => {
     const m = meta[file] || {};
     const baseName = m.baseName ?? getBaseNameFromFile(file);
 
     return {
-      id: m.id ?? index + 1,
+      // ID stabile: se non hai m.id nel json, usa baseName (non index!)
+      id: m.id ?? baseName,
       baseName,
       title: m.title ?? baseName,
       file,
@@ -86,7 +93,15 @@ function buildPhotoList() {
     };
   });
 
-  photos.sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
+  // sort: se id è stringa, ordina per title; se è numero, ordina per numero
+  photos.sort((a, b) => {
+    const an = Number(a.id);
+    const bn = Number(b.id);
+    const bothNums = Number.isFinite(an) && Number.isFinite(bn);
+    if (bothNums) return an - bn;
+    return String(a.title).localeCompare(String(b.title));
+  });
+
   return photos;
 }
 
@@ -109,5 +124,8 @@ async function start() {
     process.exit(1);
   }
 }
+
+app.use("/api/admin/orders", adminOrdersRouter);
+
 
 start();

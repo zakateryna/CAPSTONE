@@ -18,7 +18,9 @@ export default function Gallery({
           const isFeature = photo.mode === "FEATURE";
           const isActiveProject = projectPhoto?.id === photo.id;
 
-          if (isComingSoon) console.log("[DISABLED CARD]", photo.title, photo.mode);
+          if (isComingSoon) {
+            console.log("[DISABLED CARD]", photo.title, photo.mode);
+          }
 
           return (
             <div key={photo.id} className="contents">
@@ -30,30 +32,34 @@ export default function Gallery({
                 }}
                 disabled={isComingSoon}
                 className={[
-                  "text-left group border-4 border-[#5D172E] bg-white overflow-hidden",
-                  "shadow-[4px_4px_0px_0px_#5D172E] transition-transform",
+                  "ui-cardbtn group",
+                  "transition-all",
                   isComingSoon
                     ? "opacity-60 cursor-not-allowed"
-                    : "cursor-pointer hover:-translate-y-1",
+                    : [
+                        "cursor-pointer",
+                        "hover:-translate-y-1",
+                        "hover:shadow-[6px_6px_0px_0px_var(--color-primary)]",
+                        "active:translate-y-[2px]",
+                        "active:shadow-[1px_1px_0px_0px_var(--color-primary)]",
+                      ].join(" "),
                 ].join(" ")}
               >
-                <div
-                  className={`${photo.color} border-b-4 border-[#5D172E] px-2 py-1 text-[8px] font-bold text-[#5D172E] uppercase flex items-center justify-between`}
-                >
-                  <span className="truncate">{photo.title}</span>
+                <div className={`ui-bar ${photo.color} px-2 py-1`}>
+                  <span className="truncate ui-label">{photo.title}</span>
 
                   {isLink && (
-                    <span className="material-symbols-outlined text-[12px]">
+                    <span className="material-symbols-outlined text-base md:text-lg">
                       open_in_new
                     </span>
                   )}
                   {isFeature && (
-                    <span className="material-symbols-outlined text-[12px]">
+                    <span className="material-symbols-outlined text-base md:text-lg">
                       star
                     </span>
                   )}
                   {isComingSoon && (
-                    <span className="material-symbols-outlined text-[12px]">
+                    <span className="material-symbols-outlined text-base md:text-lg">
                       construction
                     </span>
                   )}
@@ -63,14 +69,13 @@ export default function Gallery({
                   <img
                     src={photo.src}
                     alt={photo.title}
-                    className="block w-full aspect-square object-cover grayscale group-hover:grayscale-0 transition-all duration-300" loading="lazy"
+                    className="block w-full aspect-square object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
+                    loading="lazy"
                   />
 
                   {isComingSoon && (
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="border-4 border-[#5D172E] bg-[#FFD166] text-[#5D172E] px-3 py-2 text-[10px] font-bold uppercase shadow-[3px_3px_0px_0px_#5D172E]">
-                        In_Construction
-                      </div>
+                      <div className="ui-chip">In_Construction</div>
                     </div>
                   )}
                 </div>
