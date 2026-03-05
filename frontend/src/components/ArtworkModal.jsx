@@ -1,5 +1,7 @@
+// src/components/ArtworkModal.jsx
 import { useEffect, useMemo, useState } from "react";
 import ModalShell from "./ModalShell";
+import { api } from "../lib/api";
 
 function getOrCreateUserId() {
   const key = "zaka_user_id";
@@ -24,21 +26,23 @@ export default function ArtworkModal({ photo, onClose }) {
 
   useEffect(() => {
     // count globale
-    fetch(`/api/stars/${encodeURIComponent(STAR_KEY)}`)
+    fetch(api(`/api/stars/${encodeURIComponent(STAR_KEY)}`))
       .then((r) => r.json())
       .then((d) => setCount(Number(d?.count || 0)))
       .catch(() => setCount(0));
 
     // liked per user
     fetch(
-      `/api/stars/${encodeURIComponent(
-        STAR_KEY
-      )}/me?userId=${encodeURIComponent(userId)}`
+      api(
+        `/api/stars/${encodeURIComponent(
+          STAR_KEY
+        )}/me?userId=${encodeURIComponent(userId)}`
+      )
     )
       .then((r) => r.json())
       .then((d) => setLiked(!!d?.liked))
       .catch(() => setLiked(false));
-  }, [STAR_KEY, userId]);
+  }, [userId]);
 
   const toggleStar = async () => {
     if (busy) return;
@@ -46,7 +50,7 @@ export default function ArtworkModal({ photo, onClose }) {
 
     try {
       const res = await fetch(
-        `/api/stars/${encodeURIComponent(STAR_KEY)}/toggle`,
+        api(`/api/stars/${encodeURIComponent(STAR_KEY)}/toggle`),
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -54,7 +58,7 @@ export default function ArtworkModal({ photo, onClose }) {
         }
       );
 
-      const data = await res.json();
+      const data = await res.json().catch(() => ({}));
       setLiked(!!data?.liked);
       setCount(Number(data?.count || 0));
     } finally {
@@ -93,8 +97,9 @@ export default function ArtworkModal({ photo, onClose }) {
         {/* RIGHT — Monthly Artwork */}
         <div className="ui-card">
           <div
-            className={`ui-bar ${photo?.color || "bg-[color:var(--color-retro-yellow)]"
-              }`}
+            className={`ui-bar ${
+              photo?.color || "bg-[color:var(--color-retro-yellow)]"
+            }`}
           >
             <h2 className="ui-label">Monthly_Artwork</h2>
           </div>

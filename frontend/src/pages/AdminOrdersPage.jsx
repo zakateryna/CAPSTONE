@@ -1,16 +1,24 @@
+// src/pages/AdminOrdersPage.jsx
 import { useEffect, useMemo, useState } from "react";
+import { api } from "../lib/api";
 
 const STATUSES = ["PENDING", "PAID", "FAILED", "CANCELED", "REFUNDED"];
 
 function centsToEUR(cents) {
   const n = Number(cents || 0) / 100;
-  return new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" }).format(n);
+  return new Intl.NumberFormat("it-IT", {
+    style: "currency",
+    currency: "EUR",
+  }).format(n);
 }
 
 function fmtDate(iso) {
   if (!iso) return "—";
   try {
-    return new Intl.DateTimeFormat("it-IT", { dateStyle: "medium", timeStyle: "short" }).format(new Date(iso));
+    return new Intl.DateTimeFormat("it-IT", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(new Date(iso));
   } catch {
     return String(iso);
   }
@@ -29,7 +37,11 @@ function StatusChip({ status }) {
     REFUNDED: "ui-panel ui-panel-info",
   };
   return (
-    <span className={`${map[status] || "ui-panel"} px-2 py-1 text-[11px] md:text-xs font-bold uppercase tracking-wide`}>
+    <span
+      className={`${
+        map[status] || "ui-panel"
+      } px-2 py-1 text-[11px] md:text-xs font-bold uppercase tracking-wide`}
+    >
       {status}
     </span>
   );
@@ -38,7 +50,7 @@ function StatusChip({ status }) {
 export default function AdminOrdersPage() {
   const [token, setToken] = useState(getSavedToken());
 
-  // menu stato 
+  // menu stato
   const [statusTab, setStatusTab] = useState("ALL");
 
   const [q, setQ] = useState("");
@@ -56,7 +68,7 @@ export default function AdminOrdersPage() {
     [token]
   );
 
-  // conteggi veloci lato client 
+  // conteggi veloci lato client
   const counts = useMemo(() => {
     const c = { ALL: items.length };
     for (const s of STATUSES) c[s] = 0;
@@ -74,12 +86,14 @@ export default function AdminOrdersPage() {
       if (nextTab && nextTab !== "ALL") params.set("status", nextTab);
       if (q.trim()) params.set("q", q.trim());
 
-      const res = await fetch(`/api/admin/orders?${params.toString()}`, { headers });
+      const res = await fetch(
+        api(`/api/admin/orders?${params.toString()}`),
+        { headers }
+      );
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.code || "FAILED");
 
       setItems(data.items || []);
-
     } catch {
       setItems([]);
       setSelected(null);
@@ -95,7 +109,7 @@ export default function AdminOrdersPage() {
     setErr("");
     setBusy(true);
     try {
-      const res = await fetch(`/api/admin/orders/${id}`, { headers });
+      const res = await fetch(api(`/api/admin/orders/${id}`), { headers });
       const data = await res.json();
       if (!res.ok || !data.ok) throw new Error(data.code || "FAILED");
       setSelected(data.order);
@@ -113,7 +127,7 @@ export default function AdminOrdersPage() {
     setErr("");
     setBusy(true);
     try {
-      const res = await fetch(`/api/admin/orders/${selected._id}/status`, {
+      const res = await fetch(api(`/api/admin/orders/${selected._id}/status`), {
         method: "PATCH",
         headers,
         body: JSON.stringify({ status: selected.status }),
@@ -138,6 +152,7 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     if (token) loadOrders("ALL");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onTab = (tab) => {
@@ -152,10 +167,16 @@ export default function AdminOrdersPage() {
         <div className="ui-bar bg-[color:var(--color-retro-taskbar)]">
           <div className="flex items-center gap-2">
             <span className="material-symbols-outlined text-base">terminal</span>
-            <h1 className="ui-label text-sm md:text-base">Orders_ControlRoom</h1>
+            <h1 className="ui-label text-sm md:text-base">
+              Orders_ControlRoom
+            </h1>
           </div>
 
-          <button className="ui-btn px-2 py-1" onClick={() => loadOrders(statusTab)} disabled={busy || !token}>
+          <button
+            className="ui-btn px-2 py-1"
+            onClick={() => loadOrders(statusTab)}
+            disabled={busy || !token}
+          >
             Refresh
           </button>
         </div>
@@ -168,7 +189,11 @@ export default function AdminOrdersPage() {
               value={token}
               onChange={(e) => setToken(e.target.value)}
             />
-            <button className="ui-btn h-11" onClick={saveToken} disabled={busy || !token}>
+            <button
+              className="ui-btn h-11"
+              onClick={saveToken}
+              disabled={busy || !token}
+            >
               Save token
             </button>
 
@@ -180,7 +205,11 @@ export default function AdminOrdersPage() {
               disabled={!token}
             />
 
-            <button className="ui-btn h-11" onClick={() => loadOrders(statusTab)} disabled={busy || !token}>
+            <button
+              className="ui-btn h-11"
+              onClick={() => loadOrders(statusTab)}
+              disabled={busy || !token}
+            >
               Apply
             </button>
           </div>
@@ -226,12 +255,16 @@ export default function AdminOrdersPage() {
         <div className="lg:col-span-5 ui-card">
           <div className="ui-bar bg-[#93D5B3]">
             <span className="ui-label text-sm md:text-base">Orders.list</span>
-            <span className="ui-badge bg-white text-[10px] md:text-xs">{items.length}</span>
+            <span className="ui-badge bg-white text-[10px] md:text-xs">
+              {items.length}
+            </span>
           </div>
 
           <div className="p-4 space-y-2">
             {!items.length ? (
-              <p className="text-sm opacity-70">{token ? "Nessun ordine in questo filtro." : "Inserisci token."}</p>
+              <p className="text-sm opacity-70">
+                {token ? "Nessun ordine in questo filtro." : "Inserisci token."}
+              </p>
             ) : (
               items.map((o) => (
                 <button
@@ -239,7 +272,9 @@ export default function AdminOrdersPage() {
                   onClick={() => loadOrder(o._id)}
                   className={[
                     "w-full text-left ui-card-sm p-3 transition",
-                    selected?._id === o._id ? "bg-[color:var(--color-background-light)]" : "bg-white",
+                    selected?._id === o._id
+                      ? "bg-[color:var(--color-background-light)]"
+                      : "bg-white",
                   ].join(" ")}
                   title="Open order"
                 >
@@ -253,7 +288,9 @@ export default function AdminOrdersPage() {
 
                     <div className="flex flex-col items-end gap-2">
                       <StatusChip status={o.status} />
-                      <span className="text-xs font-bold">{centsToEUR(o.totalCents)}</span>
+                      <span className="text-xs font-bold">
+                        {centsToEUR(o.totalCents)}
+                      </span>
                     </div>
                   </div>
                 </button>
@@ -271,7 +308,9 @@ export default function AdminOrdersPage() {
 
           <div className="p-4 space-y-3">
             {!selected ? (
-              <p className="text-sm opacity-70">Seleziona un ordine dalla lista.</p>
+              <p className="text-sm opacity-70">
+                Seleziona un ordine dalla lista.
+              </p>
             ) : (
               <>
                 <div className="ui-panel text-sm space-y-1">
@@ -281,7 +320,9 @@ export default function AdminOrdersPage() {
                   </div>
                   <div>
                     <span className="opacity-70">Created:</span>{" "}
-                    <span className="font-bold">{fmtDate(selected.createdAt)}</span>
+                    <span className="font-bold">
+                      {fmtDate(selected.createdAt)}
+                    </span>
                   </div>
                   <div>
                     <span className="opacity-70">Email:</span>{" "}
@@ -289,12 +330,16 @@ export default function AdminOrdersPage() {
                   </div>
                   <div>
                     <span className="opacity-70">Total:</span>{" "}
-                    <span className="font-bold">{centsToEUR(selected.totalCents)}</span>
+                    <span className="font-bold">
+                      {centsToEUR(selected.totalCents)}
+                    </span>
                   </div>
                   {selected.stripePaymentIntentId ? (
                     <div className="break-all">
                       <span className="opacity-70">PI:</span>{" "}
-                      <span className="font-[var(--font-mono)]">{selected.stripePaymentIntentId}</span>
+                      <span className="font-[var(--font-mono)]">
+                        {selected.stripePaymentIntentId}
+                      </span>
                     </div>
                   ) : null}
                 </div>
@@ -306,7 +351,9 @@ export default function AdminOrdersPage() {
                       <select
                         className="ui-input w-full h-11"
                         value={selected.status}
-                        onChange={(e) => setSelected((s) => ({ ...s, status: e.target.value }))}
+                        onChange={(e) =>
+                          setSelected((s) => ({ ...s, status: e.target.value }))
+                        }
                       >
                         {STATUSES.map((s) => (
                           <option key={s} value={s}>
@@ -316,7 +363,11 @@ export default function AdminOrdersPage() {
                       </select>
                     </div>
 
-                    <button className="ui-btn h-11" onClick={saveStatus} disabled={busy}>
+                    <button
+                      className="ui-btn h-11"
+                      onClick={saveStatus}
+                      disabled={busy}
+                    >
                       Save
                     </button>
                   </div>
@@ -325,26 +376,39 @@ export default function AdminOrdersPage() {
                 <div className="ui-card-sm">
                   <div className="ui-bar bg-[#93D5B3]">
                     <span className="ui-label">Items</span>
-                    <span className="text-xs opacity-70">{(selected.items || []).length}</span>
+                    <span className="text-xs opacity-70">
+                      {(selected.items || []).length}
+                    </span>
                   </div>
 
                   <div className="p-3 space-y-2 text-sm">
                     {(selected.items || []).map((it, idx) => (
-                      <div key={`${it.baseName}_${it.productKey}_${idx}`} className="ui-panel ui-panel-soft">
+                      <div
+                        key={`${it.baseName}_${it.productKey}_${idx}`}
+                        className="ui-panel ui-panel-soft"
+                      >
                         <div className="flex items-start justify-between gap-2">
                           <div>
-                            <div className="font-bold">{it.productLabel || it.productKey}</div>
+                            <div className="font-bold">
+                              {it.productLabel || it.productKey}
+                            </div>
                             <div className="text-xs opacity-70">
                               {it.title || it.baseName} • x{it.qty}
                             </div>
                           </div>
                           <div className="text-right">
-                            <div className="font-bold">{centsToEUR(it.lineTotalCents)}</div>
-                            <div className="text-xs opacity-70">{centsToEUR(it.unitPriceCents)} / unit</div>
+                            <div className="font-bold">
+                              {centsToEUR(it.lineTotalCents)}
+                            </div>
+                            <div className="text-xs opacity-70">
+                              {centsToEUR(it.unitPriceCents)} / unit
+                            </div>
                           </div>
                         </div>
                         {it.mockupUrl ? (
-                          <div className="text-xs opacity-70 break-all mt-2">mockup: {it.mockupUrl}</div>
+                          <div className="text-xs opacity-70 break-all mt-2">
+                            mockup: {it.mockupUrl}
+                          </div>
                         ) : null}
                       </div>
                     ))}
@@ -355,7 +419,6 @@ export default function AdminOrdersPage() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }

@@ -9,9 +9,8 @@ import { connectDB } from "./src/db/connect.js";
 import ordersRouter from "./src/routes/orders.routes.js";
 import stripeWebhookRouter from "./src/routes/stripe.webhook.routes.js";
 import starsRouter from "./src/routes/stars.routes.js";
-import { PRODUCT_TYPES } from "./src/config/catalog.js";
 import adminOrdersRouter from "./src/routes/admin.orders.routes.js";
-
+import { PRODUCT_TYPES } from "./src/config/catalog.js";
 
 const app = express();
 
@@ -31,9 +30,8 @@ app.use(express.json());
 
 /* Routes API */
 app.use("/api/orders", ordersRouter);
-
-/* Stars (no DB — in-memory) */
 app.use("/api/stars", starsRouter);
+app.use("/api/admin/orders", adminOrdersRouter);
 
 /* Product types */
 app.get("/api/product-types", (_req, res) => {
@@ -49,6 +47,7 @@ app.get("/health", (_req, res) => res.json({ ok: true }));
 /* Photos */
 const PHOTOS_DIR = path.join(process.cwd(), "public", "images", "photos");
 const META_PATH = path.join(process.cwd(), "public", "meta", "photos.json");
+const BASE_URL = (process.env.BASE_URL || "").replace(/\/+$/, "");
 
 function getBaseNameFromFile(file) {
   return path.parse(file).name;
@@ -66,9 +65,7 @@ function readPhotosMeta() {
 
 function readPhotoFiles() {
   if (!fs.existsSync(PHOTOS_DIR)) return [];
-  return fs
-    .readdirSync(PHOTOS_DIR)
-    .filter((file) => /\.(png|jpg|jpeg|webp)$/i.test(file));
+  return fs.readdirSync(PHOTOS_DIR).filter((file) => /\.(png|jpg|jpeg|webp)$/i.test(file));
 }
 
 function buildPhotoList() {
@@ -80,12 +77,11 @@ function buildPhotoList() {
     const baseName = m.baseName ?? getBaseNameFromFile(file);
 
     return {
-      // ID stabile: se non hai m.id nel json, usa baseName (non index!)
       id: m.id ?? baseName,
       baseName,
       title: m.title ?? baseName,
       file,
-      src: `/assets/images/photos/${file}`,
+      src: `${BASE_URL}/assets/images/photos/${file}`, // ✅ FIX
       mode: m.mode ?? "COMING_SOON",
       color: m.color ?? "bg-[#93D5B3]",
       note: m.note ?? undefined,
@@ -93,7 +89,6 @@ function buildPhotoList() {
     };
   });
 
-  // sort: se id è stringa, ordina per title; se è numero, ordina per numero
   photos.sort((a, b) => {
     const an = Number(a.id);
     const bn = Number(b.id);
@@ -124,8 +119,5 @@ async function start() {
     process.exit(1);
   }
 }
-
-app.use("/api/admin/orders", adminOrdersRouter);
-
 
 start();

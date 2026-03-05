@@ -1,16 +1,21 @@
+// src/pages/CartPage.jsx
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useCart } from "../context/cartContext";
 import CheckoutPanel from "../components/CheckoutPanel";
 import { useSearchParams, Link } from "react-router-dom";
+import { api } from "../lib/api";
 
 export default function CartPage() {
   const { items, subtotal, removeItem, setQty, clear } = useCart();
   const [searchParams, setSearchParams] = useSearchParams();
+
   const isPaid = searchParams.get("paid") === "1";
   const orderId = searchParams.get("order");
+
   const [showCheckout, setShowCheckout] = useState(false);
   const [orderStatus, setOrderStatus] = useState(null);
   const [orderMsg, setOrderMsg] = useState("");
+
   const subtotalCents = Math.round(subtotal * 100);
   const cleanupTimerRef = useRef(null);
 
@@ -71,7 +76,7 @@ export default function CartPage() {
       setOrderStatus(null);
 
       try {
-        const res = await fetch(`/api/orders/${orderId}`, {
+        const res = await fetch(api(`/api/orders/${orderId}`), {
           signal: controller.signal,
         });
         const data = await res.json().catch(() => ({}));
@@ -172,7 +177,11 @@ export default function CartPage() {
                   {item.title}
                 </div>
 
-                <button type="button" onClick={() => removeItem(item.id)} className="ui-btn">
+                <button
+                  type="button"
+                  onClick={() => removeItem(item.id)}
+                  className="ui-btn"
+                >
                   Remove
                 </button>
               </div>
@@ -253,7 +262,8 @@ export default function CartPage() {
             <div className="ui-card p-4">
               <div className="ui-label">PAYMENT_GATE — Minimum not reached</div>
               <div className="mt-2 ui-body opacity-80 normal-case font-normal">
-                Add a small item to continue. No charges will happen until you confirm.
+                Add a small item to continue. No charges will happen until you
+                confirm.
               </div>
             </div>
           )}

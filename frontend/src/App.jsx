@@ -1,5 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { api } from "./lib/api";
 
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -47,8 +48,8 @@ export default function App() {
     async function load() {
       try {
         const [photosRes, typesRes] = await Promise.all([
-          fetch("/api/photos"),
-          fetch("/api/product-types"),
+          fetch(api("/api/photos")),
+          fetch(api("/api/product-types"))
         ]);
 
         if (!photosRes.ok) throw new Error(`PHOTOS_HTTP_${photosRes.status}`);
@@ -83,27 +84,27 @@ export default function App() {
     <div className="min-h-screen flex flex-col font-mono bg-[#F2E8DA] text-[#5D172E]">
       <Header />
 
-<div className="flex-1">
-      <Routes>
-        <Route path="/" element={<HomePage photos={photos} />} />
-        <Route
-          path="/shop"
-          element={<ShopPage photos={photos} productTypes={productTypes} />}
-        />
-        <Route
-          path="/archive"
-          element={<ArchivePage photos={photos} productTypes={productTypes} />}
-        />
-        <Route path="/about" element={<AboutPage photos={photos} />} />
-        <Route path="/cart" element={<CartPage />} />
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/privacy" element={<PrivacyPage />} />
+      <div className="flex-1">
+        <Routes>
+          <Route path="/" element={<HomePage photos={photos} />} />
+          <Route
+            path="/shop"
+            element={<ShopPage photos={photos} productTypes={productTypes} />}
+          />
+          <Route
+            path="/archive"
+            element={<ArchivePage photos={photos} productTypes={productTypes} />}
+          />
+          <Route path="/about" element={<AboutPage photos={photos} />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
 
-        <Route path="/admin/orders" element={<AdminOrdersPage />} />
+          <Route path="/admin/orders" element={<AdminOrdersPage />} />
 
-        
-      </Routes>
-</div>
+
+        </Routes>
+      </div>
 
       <Footer />
     </div>
