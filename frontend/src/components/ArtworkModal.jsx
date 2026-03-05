@@ -14,7 +14,6 @@ function getOrCreateUserId() {
 }
 
 export default function ArtworkModal({ photo, onClose }) {
-  // ✅ chiave fissa: non dipende dalla foto
   const STAR_KEY = "monthly_artwork";
 
   const userId = useMemo(() => getOrCreateUserId(), []);

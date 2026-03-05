@@ -2,7 +2,7 @@ export default function ProductPicker({
   products,
   activeKey,
   onPick,
-  baseName, // lo teniamo anche se qui non serve (compatibilità)
+  baseName, 
   onSelectSize,
   onSelectVariant,
 }) {

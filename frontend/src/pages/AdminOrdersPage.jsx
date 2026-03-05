@@ -38,7 +38,7 @@ function StatusChip({ status }) {
 export default function AdminOrdersPage() {
   const [token, setToken] = useState(getSavedToken());
 
-  // menu stato (ALL oppure uno degli enum)
+  // menu stato 
   const [statusTab, setStatusTab] = useState("ALL");
 
   const [q, setQ] = useState("");
@@ -56,7 +56,7 @@ export default function AdminOrdersPage() {
     [token]
   );
 
-  // conteggi veloci lato client (sui risultati caricati)
+  // conteggi veloci lato client 
   const counts = useMemo(() => {
     const c = { ALL: items.length };
     for (const s of STATUSES) c[s] = 0;
@@ -80,7 +80,6 @@ export default function AdminOrdersPage() {
 
       setItems(data.items || []);
 
-      // se avevi un selected che non esiste più nella lista filtrata, lo lasciamo comunque
     } catch {
       setItems([]);
       setSelected(null);
@@ -124,7 +123,6 @@ export default function AdminOrdersPage() {
 
       setSelected(data.order);
 
-      // ricarica la lista nel tab corrente
       await loadOrders(statusTab);
     } catch {
       setErr("Errore salvataggio status.");
@@ -140,7 +138,6 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     if (token) loadOrders("ALL");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onTab = (tab) => {

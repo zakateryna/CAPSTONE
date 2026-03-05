@@ -12,7 +12,7 @@ router.get("/:photoId", (req, res) => {
   return res.json({ ok: true, count: starCounts[photoId] || 0 });
 });
 
-// GET stato "liked" per user (così il frontend si allinea)
+// GET stato "liked" per user 
 router.get("/:photoId/me", (req, res) => {
   const { photoId } = req.params;
   const userId = req.query.userId;

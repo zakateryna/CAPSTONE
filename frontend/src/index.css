@@ -29,7 +29,6 @@
     color: var(--color-primary);
   }
 
-  /* opzionale ma utile: input coerenti */
   input,
   button,
   textarea,
@@ -197,7 +196,7 @@
     color: var(--color-retro-yellow);
   }
 
-  /* Gallery card button (NO @apply group!) */
+  /* Gallery card button  */
   .ui-cardbtn {
     @apply text-left overflow-hidden border-4 bg-white transition-transform;
     border-color: var(--color-primary);

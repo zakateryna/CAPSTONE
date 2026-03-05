@@ -44,7 +44,7 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Hidden-ish admin link (fits retro/taskbar vibe) */}
+      {/* admin link */}
       <div className="max-w-5xl mx-auto px-6 pb-4">
         <div className="ui-panel flex items-center justify-between px-3 py-2">
           <span className="text-[10px] md:text-[11px] opacity-70 uppercase tracking-widest">

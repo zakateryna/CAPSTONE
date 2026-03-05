@@ -7,9 +7,7 @@ router.use(requireAdmin);
 
 const ALLOWED = ["PENDING", "PAID", "FAILED", "CANCELED", "REFUNDED"];
 
-/**
- * GET /api/admin/orders?status=PAID&q=email&page=1&limit=50
- */
+/* GET /api/admin/orders?status=PAID&q=email&page=1&limit=50  */
 router.get("/", async (req, res) => {
   try {
     const { status, q } = req.query;

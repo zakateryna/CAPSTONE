@@ -119,7 +119,6 @@ export default function CheckoutPanel({ amountCents, items }) {
 
   useEffect(() => {
     if (amountCents >= 50) createOrderAndIntent();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amountCents, idempotencyKey]);
 
   const options = useMemo(() => ({ clientSecret }), [clientSecret]);
