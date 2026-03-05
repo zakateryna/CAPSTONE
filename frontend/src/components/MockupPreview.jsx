@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { asset } from "../lib/api";
 
 export default function MockupPreview({ title, originalSrc, mockupSrc }) {
   const [mode, setMode] = useState("mockup");
@@ -59,7 +60,7 @@ export default function MockupPreview({ title, originalSrc, mockupSrc }) {
         <div className="relative aspect-square border-4 border-[color:var(--color-primary)] bg-[#f8f8f8] flex items-center justify-center overflow-hidden">
           {!showFallback && (
             <img
-              src={srcToShow}
+              src={asset(srcToShow)}
               alt={title}
               className="w-full h-full object-cover"
               onError={() => setImgError(true)}
@@ -68,7 +69,9 @@ export default function MockupPreview({ title, originalSrc, mockupSrc }) {
 
           {showFallback && (
             <div className="text-center opacity-30">
-              <span className="material-symbols-outlined text-4xl">image_search</span>
+              <span className="material-symbols-outlined text-4xl">
+                image_search
+              </span>
               <p className="ui-label mt-2">Missing_Source</p>
             </div>
           )}

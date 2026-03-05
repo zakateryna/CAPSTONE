@@ -1,7 +1,7 @@
 // src/components/ArtworkModal.jsx
 import { useEffect, useMemo, useState } from "react";
 import ModalShell from "./ModalShell";
-import { api } from "../lib/api";
+import { api, asset } from "../lib/api";
 
 function getOrCreateUserId() {
   const key = "zaka_user_id";
@@ -17,7 +17,6 @@ function getOrCreateUserId() {
 
 export default function ArtworkModal({ photo, onClose }) {
   const STAR_KEY = "monthly_artwork";
-
   const userId = useMemo(() => getOrCreateUserId(), []);
 
   const [liked, setLiked] = useState(false);
@@ -42,7 +41,7 @@ export default function ArtworkModal({ photo, onClose }) {
       .then((r) => r.json())
       .then((d) => setLiked(!!d?.liked))
       .catch(() => setLiked(false));
-  }, [userId]);
+  }, [STAR_KEY, userId]);
 
   const toggleStar = async () => {
     if (busy) return;
@@ -81,7 +80,7 @@ export default function ArtworkModal({ photo, onClose }) {
           <div className="p-4">
             <div className="relative aspect-square border-4 border-[color:var(--color-primary)] bg-[#f8f8f8] overflow-hidden">
               <img
-                src={photo?.src}
+                src={asset(photo?.src)}
                 alt={photo?.title}
                 className="w-full h-full object-cover"
                 loading="lazy"

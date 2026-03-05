@@ -1,4 +1,5 @@
 import ProjectPanelInline from "./ProjectPanelInline";
+import { asset } from "../lib/api";
 
 export default function Gallery({
   photos = [],
@@ -27,7 +28,13 @@ export default function Gallery({
               <button
                 type="button"
                 onClick={() => {
-                  console.log("[CLICK]", photo.title, photo.mode, "disabled:", isComingSoon);
+                  console.log(
+                    "[CLICK]",
+                    photo.title,
+                    photo.mode,
+                    "disabled:",
+                    isComingSoon
+                  );
                   onSelectPhoto?.(photo);
                 }}
                 disabled={isComingSoon}
@@ -67,7 +74,7 @@ export default function Gallery({
 
                 <div className="relative">
                   <img
-                    src={photo.src}
+                    src={asset(photo.src)}
                     alt={photo.title}
                     className="block w-full aspect-square object-cover grayscale group-hover:grayscale-0 transition-all duration-300"
                     loading="lazy"
@@ -83,7 +90,10 @@ export default function Gallery({
 
               {photo.mode === "LINK" && isActiveProject && (
                 <div className="col-span-2 md:col-span-3">
-                  <ProjectPanelInline photo={projectPhoto} onClose={onCloseProject} />
+                  <ProjectPanelInline
+                    photo={projectPhoto}
+                    onClose={onCloseProject}
+                  />
                 </div>
               )}
             </div>

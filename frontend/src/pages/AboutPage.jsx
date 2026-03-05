@@ -1,10 +1,14 @@
 import InfoGridTop from "../components/InfoGridTop";
 import InfoGridBottom from "../components/InfoGridBottom";
 import ArchiveIntro from "../components/ArchiveIntro";
+import { asset } from "../lib/api";
 
 export default function AboutPage({ photos = [] }) {
   const palermo = photos.find(
-    (p) => p.file === "palermo.png" || p.title === "palermo.png" || p.title === "palermo"
+    (p) =>
+      p.file === "palermo.png" ||
+      p.title === "palermo.png" ||
+      p.title === "palermo"
   );
 
   const golden = photos.find(
@@ -46,18 +50,17 @@ export default function AboutPage({ photos = [] }) {
             </div>
 
             <img
-              src={palermo.src}
+              src={asset(palermo.src)}
               alt={palermo.title}
               className="block w-full h-64 object-cover"
+              loading="lazy"
             />
 
             <div className="p-4 text-sm md:text-base space-y-2">
               <p className="font-bold uppercase opacity-80 tracking-wide">
                 {palermo.note || "Featured Fragment"}
               </p>
-              <p>
-                Selected piece — exhibited inside the archive system.
-              </p>
+              <p>Selected piece — exhibited inside the archive system.</p>
             </div>
           </div>
         )}
@@ -72,9 +75,10 @@ export default function AboutPage({ photos = [] }) {
             </div>
 
             <img
-              src={golden.src}
+              src={asset(golden.src)}
               alt={golden.title}
               className="block w-full h-64 object-cover"
+              loading="lazy"
             />
 
             <div className="p-4 text-sm md:text-base space-y-2">

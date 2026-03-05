@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useCart } from "../context/cartContext";
 import CheckoutPanel from "../components/CheckoutPanel";
 import { useSearchParams, Link } from "react-router-dom";
-import { api } from "../lib/api";
+import { api, asset } from "../lib/api";
 
 export default function CartPage() {
   const { items, subtotal, removeItem, setQty, clear } = useCart();
@@ -144,7 +144,9 @@ export default function CartPage() {
 
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-base md:text-lg font-bold uppercase tracking-wide flex items-center gap-2">
-          <span className="material-symbols-outlined text-base">shopping_cart</span>
+          <span className="material-symbols-outlined text-base">
+            shopping_cart
+          </span>
           Cart.sys
         </h1>
 
@@ -189,9 +191,10 @@ export default function CartPage() {
               <div className="p-4 grid grid-cols-1 md:grid-cols-[120px_1fr_160px] gap-4 items-center">
                 <div className="aspect-square border-4 border-[color:var(--color-primary)] bg-[#f8f8f8] overflow-hidden">
                   <img
-                    src={item.mockupSrc || item.originalSrc}
+                    src={asset(item.mockupSrc || item.originalSrc)}
                     alt={item.title}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                 </div>
 
